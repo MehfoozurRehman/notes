@@ -88,7 +88,31 @@ export function Card({ data, refetch }: { data: Note; refetch: () => void }) {
             outline: "none",
           }}
         />
-        {isEditing && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "1rem",
+          }}
+        >
+          {isEditing && (
+            <button
+              style={{
+                padding: "0.5rem",
+                fontSize: "1rem",
+                fontWeight: "bold",
+                color: "black",
+                backgroundColor: "lightgray",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+              disabled={updating}
+              onClick={updateNote}
+            >
+              {updating ? "..." : "u"}
+            </button>
+          )}
           <button
             style={{
               padding: "0.5rem",
@@ -100,32 +124,15 @@ export function Card({ data, refetch }: { data: Note; refetch: () => void }) {
               borderRadius: "5px",
               cursor: "pointer",
             }}
-            disabled={updating}
-            onClick={updateNote}
+            disabled={deleting}
+            onClick={deleteNote}
           >
-            {updating ? "..." : "u"}
+            d
           </button>
-        )}
-        <button
-          style={{
-            padding: "0.5rem",
-            fontSize: "1rem",
-            fontWeight: "bold",
-            color: "black",
-            backgroundColor: "lightgray",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-          disabled={deleting}
-          onClick={deleteNote}
-        >
-          d
-        </button>
+        </div>
       </div>
       <div
         contentEditable
-        content={content || "No content"}
         onInput={(e) => setContent(e.currentTarget.textContent || "")}
         style={{
           marginTop: "1rem",
@@ -138,7 +145,9 @@ export function Card({ data, refetch }: { data: Note; refetch: () => void }) {
           resize: "none",
           flex: 1,
         }}
-      />
+      >
+        {content}
+      </div>
       <input
         type="color"
         value={color || "blue"}
