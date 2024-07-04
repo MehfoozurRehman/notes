@@ -26,3 +26,32 @@ export async function createNote(
     console.error("An error occurred", error);
   }
 }
+
+export async function updateNote(
+  id: number,
+  title: string,
+  content: string,
+  color: string
+) {
+  try {
+    if (!title) {
+      throw new Error("Title is required");
+    }
+
+    await prisma.note.update({
+      where: {
+        id,
+      },
+      data: {
+        title,
+        content,
+        color,
+      },
+    });
+
+    revalidatePath("/");
+  } catch (error) {
+    console.error("An error occurred", error);
+  }
+}
+
