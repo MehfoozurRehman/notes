@@ -1,63 +1,21 @@
 "use client";
 
+import { deleteNote, updateNote } from "@/actions/note";
+import { useState, useTransition } from "react";
+
 import { Note } from "@/prisma/interfaces";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 export function Card({ data }: { data: Note }) {
-  const router = useRouter();
   const [title, setTitle] = useState(data.title);
   const [content, setContent] = useState(data.content);
-  const [color, setColor] = useState(data.color);
+  const [color, setColor] = useState(data.color || "blue");
 
   const isEditing =
     title !== data.title || content !== data.content || color !== data.color;
 
-  const [updating, setUpdating] = useState(false);
+  const [updating, startUpdateTransition] = useTransition();
 
-  const updateNote = async () => {
-    setUpdating(true);
-    const response = await fetch(`/api/notes/${data.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title,
-        content,
-        color,
-      }),
-    });
-
-    if (response.ok) {
-      await response.json();
-
-      router.refresh();
-    } else {
-      console.error("Failed to update note");
-    }
-    setUpdating(false);
-  };
-
-  const [deleting, setDeleting] = useState(false);
-
-  const deleteNote = async () => {
-    setDeleting(true);
-    const response = await fetch(`/api/notes/${data.id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (response.ok) {
-      await response.json();
-      router.refresh();
-    } else {
-      console.error("Failed to delete note");
-    }
-    setDeleting(false);
-  };
+  const [deleting, startDeleteTransition] = useTransition();
 
   return (
     <div
@@ -110,7 +68,11 @@ export function Card({ data }: { data: Note }) {
                 cursor: "pointer",
               }}
               disabled={updating}
-              onClick={updateNote}
+              onClick={() => {
+                startUpdateTransition(() =>
+                  updateNote(data.id, title, content || "", color || "blue")
+                );
+              }}
             >
               {updating ? "..." : "u"}
             </button>
@@ -127,7 +89,9 @@ export function Card({ data }: { data: Note }) {
               cursor: "pointer",
             }}
             disabled={deleting}
-            onClick={deleteNote}
+            onClick={() => {
+              startDeleteTransition(() => deleteNote(data.id));
+            }}
           >
             d
           </button>
