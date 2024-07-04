@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import { AddNote } from "./AddNote";
 import { Card } from "./Card";
 import { Note } from "@/prisma/interfaces";
 
@@ -35,33 +36,6 @@ export default function page() {
     });
   }, []);
 
-  const addNote = async () => {
-    const prompt = window.prompt("Enter a title for the note", "New Note");
-
-    if (!prompt) {
-      return;
-    }
-
-    const response = await fetch("/api/notes", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: prompt,
-        content: "",
-        color: "blue",
-      }),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      setNotes([...notes, data]);
-    } else {
-      console.error("Failed to add note");
-    }
-  };
-
   return (
     <div
       style={{
@@ -83,22 +57,13 @@ export default function page() {
         </p>
       ) : (
         <>
-          <button
-            style={{
-              padding: "0.5rem",
-              fontSize: "1rem",
-              fontWeight: "bold",
-              color: "black",
-              backgroundColor: "lightgray",
-              border: "none",
-              borderRadius: "5px",
-              cursor: "pointer",
-              minHeight: 200,
-            }}
-            onClick={addNote}
-          >
-            Add Note
-          </button>
+          <AddNote
+            refetch={async () =>
+              await fetchData((data: Note[]) => {
+                setNotes(data);
+              })
+            }
+          />
           {notes?.length === 0 ? (
             <p
               style={{
