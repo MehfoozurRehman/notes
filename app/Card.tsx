@@ -1,9 +1,11 @@
 "use client";
 
 import { Note } from "@/prisma/interfaces";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export function Card({ data, refetch }: { data: Note; refetch: () => void }) {
+export function Card({ data }: { data: Note }) {
+  const router = useRouter();
   const [title, setTitle] = useState(data.title);
   const [content, setContent] = useState(data.content);
   const [color, setColor] = useState(data.color);
@@ -30,7 +32,7 @@ export function Card({ data, refetch }: { data: Note; refetch: () => void }) {
     if (response.ok) {
       await response.json();
 
-      await refetch();
+      router.refresh();
     } else {
       console.error("Failed to update note");
     }
@@ -50,7 +52,7 @@ export function Card({ data, refetch }: { data: Note; refetch: () => void }) {
 
     if (response.ok) {
       await response.json();
-      await refetch();
+      router.refresh();
     } else {
       console.error("Failed to delete note");
     }
