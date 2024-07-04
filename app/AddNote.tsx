@@ -1,8 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export function AddNote({ refetch }: { refetch: () => void }) {
+export function AddNote() {
+  const router = useRouter();
   const [adding, setAdding] = useState(false);
 
   const addNote = async () => {
@@ -28,7 +30,7 @@ export function AddNote({ refetch }: { refetch: () => void }) {
     if (response.ok) {
       await response.json();
 
-      await refetch();
+      router.refresh();
     } else {
       console.error("Failed to add note");
     }
