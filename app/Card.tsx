@@ -60,6 +60,8 @@ export function Card({ data, refetch }: { data: Note; refetch: () => void }) {
   return (
     <div
       style={{
+        display: "flex",
+        flexDirection: "column",
         padding: "1rem",
         backgroundColor: color || "red",
         borderRadius: "5px",
@@ -121,18 +123,20 @@ export function Card({ data, refetch }: { data: Note; refetch: () => void }) {
           d
         </button>
       </div>
-      <textarea
-        value={content || ""}
-        onChange={(e) => setContent(e.target.value)}
+      <div
+        contentEditable
+        content={content || "No content"}
+        onChange={(e) => setContent(e.currentTarget.textContent || "")}
         style={{
           marginTop: "1rem",
           width: "100%",
-          height: "170px",
+          minHeight: "170px",
           backgroundColor: "transparent",
           border: "none",
           outline: "none",
           color: "white",
           resize: "none",
+          flex: 1,
         }}
       />
       <input
