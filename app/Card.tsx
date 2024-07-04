@@ -126,7 +126,7 @@ export function Card({ data, refetch }: { data: Note; refetch: () => void }) {
       <div
         contentEditable
         content={content || "No content"}
-        onChange={(e) => setContent(e.currentTarget.textContent || "")}
+        onInput={(e) => setContent(e.currentTarget.textContent || "")}
         style={{
           marginTop: "1rem",
           width: "100%",
