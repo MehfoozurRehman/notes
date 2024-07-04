@@ -55,3 +55,16 @@ export async function updateNote(
   }
 }
 
+export async function deleteNote(id: number) {
+  try {
+    await prisma.note.delete({
+      where: {
+        id,
+      },
+    });
+
+    revalidatePath("/");
+  } catch (error) {
+    console.error("An error occurred", error);
+  }
+}
