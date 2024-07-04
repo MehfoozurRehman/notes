@@ -6,19 +6,24 @@ import { useState, useTransition } from "react";
 import { Note } from "@/prisma/interfaces";
 
 export function Card({ data }: { data: Note }) {
-  const [title, setTitle] = useState(data.title);
-  const [content, setContent] = useState(data.content);
   const [color, setColor] = useState(data.color || "blue");
 
-  const isEditing =
-    title !== data.title || content !== data.content || color !== data.color;
+  const [isEditing, setIsEditing] = useState(false);
 
   const [updating, startUpdateTransition] = useTransition();
 
   const [deleting, startDeleteTransition] = useTransition();
 
   return (
-    <div
+    <form
+      action={async (formData: FormData) => {
+        const title = formData.get("title") as string;
+        const content = formData.get("content") as string;
+
+        startUpdateTransition(() => updateNote(data.id, title, content, color));
+
+        setIsEditing(false);
+      }}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -38,8 +43,9 @@ export function Card({ data }: { data: Note }) {
       >
         <input
           type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          defaultValue={data.title}
+          onChange={() => setIsEditing(true)}
+          name="title"
           style={{
             fontWeight: "bold",
             color: "white",
@@ -67,12 +73,8 @@ export function Card({ data }: { data: Note }) {
                 borderRadius: "5px",
                 cursor: "pointer",
               }}
+              type="submit"
               disabled={updating}
-              onClick={() => {
-                startUpdateTransition(() =>
-                  updateNote(data.id, title, content || "", color || "blue")
-                );
-              }}
             >
               {updating ? "..." : "u"}
             </button>
@@ -88,6 +90,7 @@ export function Card({ data }: { data: Note }) {
               borderRadius: "5px",
               cursor: "pointer",
             }}
+            type="button"
             disabled={deleting}
             onClick={() => {
               startDeleteTransition(() => deleteNote(data.id));
@@ -97,9 +100,9 @@ export function Card({ data }: { data: Note }) {
           </button>
         </div>
       </div>
-      <div
-        contentEditable
-        onInput={(e) => setContent(e.currentTarget.textContent || "")}
+      <textarea
+        name="content"
+        defaultValue={data.content || ""}
         style={{
           marginTop: "1rem",
           width: "100%",
@@ -111,13 +114,15 @@ export function Card({ data }: { data: Note }) {
           resize: "none",
           flex: 1,
         }}
-      >
-        {content}
-      </div>
+        onChange={() => setIsEditing(true)}
+      />
       <input
         type="color"
         value={color || "blue"}
-        onChange={(e) => setColor(e.target.value)}
+        onChange={(e) => {
+          setColor(e.target.value);
+          setIsEditing(true);
+        }}
         style={{
           marginTop: "1rem",
           width: "100%",
@@ -127,6 +132,6 @@ export function Card({ data }: { data: Note }) {
           color: "white",
         }}
       />
-    </div>
+    </form>
   );
 }
