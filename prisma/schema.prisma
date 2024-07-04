@@ -12,3 +12,11 @@ generator typescriptInterfaces {
   output   = "./interfaces.ts"
 }
 
+model Note {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String?
+  color     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
